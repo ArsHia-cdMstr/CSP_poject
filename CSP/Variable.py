@@ -48,3 +48,6 @@ class Variable(Generic[T]):
     @domain.setter
     def domain(self, value):
         self._domain = value
+
+    def __str__(self) -> str:
+        return 'Varialble Name: {}, Value: {}'.format(self.name, self.value)

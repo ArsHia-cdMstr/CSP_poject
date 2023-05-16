@@ -25,6 +25,7 @@ class Solver:
         self.problem.calculate_neighbors()
         start = time.time()
         for var in self.problem.variables:
+            print(f"var: {var}")
             if not self.forward_check(var):
                 print("Problem Unsolvable")
                 return
@@ -33,13 +34,25 @@ class Solver:
         time_elapsed = (end - start) * 1000
         if result:
             print(f'Solved after {time_elapsed} ms')
+            [print(x) for x in result]
         else:
             print(f'Failed to solve after {time_elapsed} ms')
 
 
     def backtracking(self):
-        pass
-        # Write your code here
+        uvar = self.select_unassigned_variable()
+        if self.is_finished():
+            return self.problem.variables # todo: check
+        for uval in uvar.domain:
+            uvar.value = uval
+            print(f"unass var: {uvar}")
+            if self.is_consistent(uvar):
+                result = self.backtracking()
+                if result:
+                    return result
+            else:
+                uvar.value = None
+        return False
 
     def forward_check(self, var):
         pass
@@ -61,8 +74,8 @@ class Solver:
         # Write your code here
 
     def is_consistent(self, var: Variable):
-        pass
-        # Write your code here
+        print("is consistant: ".format([x.is_satisfied() for x in self.problem.constraints]))
+        return all([x.is_satisfied() for x in self.problem.constraints])
 
 
     def lcv(self, var: Variable):

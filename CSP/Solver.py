@@ -39,11 +39,10 @@ class Solver:
             print(f'Failed to solve after {time_elapsed} ms')
 
     def backtracking(self):
-        unassigned_var: list[Variable] or None = self.select_unassigned_variable()
+        unassigned_var: Variable or None = self.select_unassigned_variable()
 
         # if we get the answer
         if self.is_finished():
-            # I think it's right
             return self.problem.variables  # todo: check
 
         for uval in unassigned_var.domain:
@@ -52,7 +51,7 @@ class Solver:
             if self.is_consistent(unassigned_var):
                 # in here we shouldn't use forward check
                 # we have to run backtracking without forward checking
-                # self.forward_check(unassigned_var)
+                self.forward_check(unassigned_var)
 
                 result = self.backtracking()
                 if result:
@@ -95,8 +94,8 @@ class Solver:
         unassigned_variables = self.problem.get_unassigned_variables()
 
     def is_consistent(self, var: Variable):
-        print("is consistant: ".format([x.is_satisfied() for x in self.problem.constraints]))
-        return all([x.is_satisfied() for x in self.problem.constraints])
+        print("is consistant: ".format([x.is_satisfied() for x in self.problem.get_neighbor_constraints(var)]))
+        return all([x.is_satisfied() for x in self.problem.get_neighbor_constraints(var)])
 
     def lcv(self, var: Variable):
         pass

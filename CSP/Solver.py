@@ -47,9 +47,9 @@ class Solver:
             return self.problem.variables  # todo: check
 
         for uval in unassigned_var.domain:
-            unassigned_var.value = uval
+            unassigned_var.value = uval  # added to assignment variables  
             print(f"unassigned var: {unassigned_var}")
-            if self.is_consistent(unassigned_var):
+            if self.is_consistent(unassigned_var): # check if dont ignore neighbors constraints
                 # in here we shouldn't use forward check
                 # we have to run backtracking without forward checking
                 self.forward_check(unassigned_var)
@@ -78,7 +78,8 @@ class Solver:
                 neighbor.domain.remove(variable_value)
             else:
                 # todo: revert the changed values from neighbors
-                break
+                return False
+        return True
 
     def select_unassigned_variable(self) -> Optional[Variable]:
         if self.use_mrv:

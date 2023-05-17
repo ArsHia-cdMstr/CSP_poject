@@ -43,6 +43,7 @@ class Solver:
 
         # if we get the answer
         if self.is_finished():
+            print(f'Assignments: {self.problem.print_assignments()}')
             return self.problem.variables  # todo: check
 
         for uval in unassigned_var.domain:

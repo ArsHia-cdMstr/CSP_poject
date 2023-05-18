@@ -39,12 +39,11 @@ class Solver:
             print(f'Failed to solve after {time_elapsed} ms')
 
     def backtracking(self):
-        unassigned_var: Variable or None = self.select_unassigned_variable()
-
-        # if we get the answer
         if self.is_finished():
             print(f'Assignments: {self.problem.print_assignments()}')
             return self.problem.variables  # todo: check
+
+        unassigned_var: Variable or None = self.select_unassigned_variable()
 
         for uval in unassigned_var.domain:
             unassigned_var.value = uval  # added to assignment variables  

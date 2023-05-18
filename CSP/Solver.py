@@ -86,6 +86,10 @@ class Solver:
                 return False
         return True
 
+    def arc_constincancy(self, variable: Variable):
+        neighbors_conttraint = self.problem.get_neighbor_constraints(variable)
+        return any([x.is_satisfied() for x in neighbors_conttraint])
+
     def select_unassigned_variable(self) -> Optional[Variable]:
         if self.use_mrv:
             return self.mrv()

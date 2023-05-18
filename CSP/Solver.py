@@ -45,7 +45,7 @@ class Solver:
             return self.problem.variables  # todo: check
 
         unassigned_var: Variable or None = self.select_unassigned_variable()
-
+        self.order_domain_values(unassigned_var)    
         for uval in unassigned_var.domain:
             unassigned_var.value = uval  # added to assignment variables  
             print(f"unassigned var: {unassigned_var}")

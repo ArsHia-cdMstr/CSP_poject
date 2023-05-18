@@ -4,6 +4,7 @@ import time
 from collections import deque
 from copy import deepcopy
 from typing import Optional
+from operator import attrgetter
 
 from CSP.Problem import Problem
 from CSP.Variable import Variable
@@ -94,6 +95,8 @@ class Solver:
 
     def mrv(self) -> Optional[Variable]:
         unassigned_variables = self.problem.get_unassigned_variables()
+        return min(unassigned_variables, key=len(attrgetter('len_domain')))
+
 
     def is_consistent(self, var: Variable):
         print("is consistant: ".format([x.is_satisfied() for x in self.problem.get_neighbor_constraints(var)]))

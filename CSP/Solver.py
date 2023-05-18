@@ -52,7 +52,8 @@ class Solver:
             if self.is_consistent(unassigned_var): # check if dont ignore neighbors constraints
                 # in here we shouldn't use forward check
                 # we have to run backtracking without forward checking
-                self.forward_check(unassigned_var)
+                if self.use_forward_check:
+                    self.forward_check(unassigned_var)
 
                 result = self.backtracking()
                 if result:

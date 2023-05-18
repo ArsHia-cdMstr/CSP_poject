@@ -97,6 +97,9 @@ class Solver:
         unassigned_variables = self.problem.get_unassigned_variables()
         return min(unassigned_variables, key=len(attrgetter('len_domain')))
 
+    def degree_heuristic(self):
+        unassigned_variables = self.problem.get_unassigned_variables()
+        return max(unassigned_variables, key=attrgetter('len_neighbors_constraint'))
 
     def is_consistent(self, var: Variable):
         print("is consistant: ".format([x.is_satisfied() for x in self.problem.get_neighbor_constraints(var)]))

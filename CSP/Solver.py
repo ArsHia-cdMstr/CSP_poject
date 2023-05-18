@@ -53,7 +53,8 @@ class Solver:
                 # in here we shouldn't use forward check
                 # we have to run backtracking without forward checking
                 if self.use_forward_check:
-                    self.forward_check(unassigned_var)
+                    if not self.forward_check(unassigned_var):
+                        break
 
                 result = self.backtracking()
                 if result:
@@ -67,17 +68,20 @@ class Solver:
         return False
 
     def forward_check(self, var):
-        pre_var_value = var.value
         self.problem.calculate_neighbors()
         variable_value = var.value
+        pre_neighbors = var.neighbors
 
         # set the value for variable, so other domains will be remove
         var.domain = [variable_value]
         # remove the value from all the neighbors, if it has more than one value, then remove the value
-        for neighbor in enumerate(var.neighbors):
+        for i, neighbor in enumerate(var.neighbors):
             if len(neighbor.domain) > 1:
                 neighbor.domain.remove(variable_value)
             else:
+                var.value = None
+                for x in range(i+1):
+                    var.neighbors[i].domain = pre_neighbors[i].domain
                 # todo: revert the changed values from neighbors
                 return False
         return True

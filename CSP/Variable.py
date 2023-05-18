@@ -49,5 +49,9 @@ class Variable(Generic[T]):
     def domain(self, value):
         self._domain = value
 
+    @property
+    def len_domain(self) -> int:
+        return len(self.domain)
+
     def __str__(self) -> str:
         return 'Varialble Name: {}, Value: {}'.format(self.name, self.value)

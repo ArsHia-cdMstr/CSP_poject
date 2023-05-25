@@ -70,21 +70,36 @@ class Solver:
     def forward_check(self, var: Variable):
         self.problem.calculate_neighbors()
         variable_value = var.value
-        pre_neighbors = var.neighbors
 
-        # set the value for variable, so other domains will be removed
-        var.domain = [variable_value]
-        # remove the value from all the neighbors, if it has more than one value, then remove the value
-        for i, neighbor in enumerate(var.neighbors):
-            if len(neighbor.domain) > 1:
-                neighbor.domain.remove(variable_value)
-            else:
-                var.value = None
-                for x in range(i + 1):
-                    var.neighbors[i].domain = pre_neighbors[i].domain
-                # todo: revert the changed values from neighbors
-                return False
-        return True
+        # NOTE: I will take care of this
+        # if you accept you delete your code
+
+        # NOTE: you are using this method to do
+        # 2 action ( forward checking / check that we are not at a deadlock)
+        # you don't need to do the 2nd one the backward method do it itself
+
+        # pre_neighbors = var.neighbors
+
+        # # set the value for variable, so other domains will be removed
+        # var.domain = [variable_value]
+        # # remove the value from all the neighbors, if it has more than one value, then remove the value
+        # for i, neighbor in enumerate(var.neighbors):
+        #     if len(neighbor.domain) > 1:
+        #         neighbor.domain.remove(variable_value)
+        #     else:
+        #         var.value = None
+        #         for x in range(i + 1):
+        #             var.neighbors[i].domain = pre_neighbors[i].domain
+        #         # todo: revert the changed values from neighbors
+        #         return False
+        # return True
+
+        for neighbor in var.neighbors:
+            for nei_v in neighbor.domain:
+                if nei_v == variable_value:
+                    neighbor.domain.remove(nei_v)
+
+
 
     def arc_constincancy(self, variable: Variable):
         constraints = self.problem.constraints

@@ -74,8 +74,8 @@ class Solver:
         # Note : I will take care of this
         # if you accept you delete your code
 
-        # NOTE: you are using this method to do
-        # 2 action ( forward checking / check that we are not at a deadlock)
+        # NOTE: you are using this method to do 
+        # 2 action ( forward checking / check that we are not at a deadend)
         # you don't need to do the 2nd one the backward method do it itself
 
         # pre_neighbors = var.neighbors
@@ -94,7 +94,7 @@ class Solver:
         #         return False
         # return True
 
-        is_not_deadlock: bool = True
+        is_not_deadend: bool = True
 
         for neighbor in var.neighbors:
             for nei_v in neighbor.domain:
@@ -103,9 +103,9 @@ class Solver:
                     # NOTE: if there is no domain for a neighbor
                     # it means there is no solution for it and we need to backward
                     if len(neighbor.domain) == 0:
-                        is_not_deadlock = False
+                        is_not_deadend = False
 
-        return is_not_deadlock
+        return is_not_deadend
 
     def arc_constincancy(self, variable: Variable):
         constraints = self.problem.constraints

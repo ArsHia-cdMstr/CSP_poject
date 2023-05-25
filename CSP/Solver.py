@@ -71,7 +71,7 @@ class Solver:
         self.problem.calculate_neighbors()
         variable_value = var.value
 
-        # NOTE: I will take care of this
+        # Note : I will take care of this
         # if you accept you delete your code
 
         # NOTE: you are using this method to do
@@ -94,12 +94,18 @@ class Solver:
         #         return False
         # return True
 
+        is_not_deadlock: bool = True
+
         for neighbor in var.neighbors:
             for nei_v in neighbor.domain:
                 if nei_v == variable_value:
                     neighbor.domain.remove(nei_v)
+                    # NOTE: if there is no domain for a neighbor
+                    # it means there is no solution for it and we need to backward
+                    if len(neighbor.domain) == 0:
+                        is_not_deadlock = False
 
-
+        return is_not_deadlock
 
     def arc_constincancy(self, variable: Variable):
         constraints = self.problem.constraints

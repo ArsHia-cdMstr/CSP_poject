@@ -45,11 +45,11 @@ class Solver:
             return self.problem.variables  # todo: check
 
         unassigned_var: Variable or None = self.select_unassigned_variable()
-        self.order_domain_values(unassigned_var)    
+        self.order_domain_values(unassigned_var)
         for uval in unassigned_var.domain:
             unassigned_var.value = uval  # added to assignment variables  
             print(f"unassigned var: {unassigned_var}")
-            if self.is_consistent(unassigned_var): # check if dont ignore neighbors constraints
+            if self.is_consistent(unassigned_var):  # check if don't ignore neighbors constraints
                 # in here we shouldn't use forward check
                 # we have to run backtracking without forward checking
                 if self.use_forward_check:
@@ -67,12 +67,12 @@ class Solver:
                 unassigned_var.value = None
         return False
 
-    def forward_check(self, var):
+    def forward_check(self, var: Variable):
         self.problem.calculate_neighbors()
         variable_value = var.value
         pre_neighbors = var.neighbors
 
-        # set the value for variable, so other domains will be remove
+        # set the value for variable, so other domains will be removed
         var.domain = [variable_value]
         # remove the value from all the neighbors, if it has more than one value, then remove the value
         for i, neighbor in enumerate(var.neighbors):
@@ -80,7 +80,7 @@ class Solver:
                 neighbor.domain.remove(variable_value)
             else:
                 var.value = None
-                for x in range(i+1):
+                for x in range(i + 1):
                     var.neighbors[i].domain = pre_neighbors[i].domain
                 # todo: revert the changed values from neighbors
                 return False

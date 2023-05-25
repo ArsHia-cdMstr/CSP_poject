@@ -96,6 +96,8 @@ class Solver:
         #         return False
         # return True
 
+        # todo: we have to copy domain and send it into lower layers
+
         is_not_deadend: bool = True
 
         for neighbor in var.neighbors:

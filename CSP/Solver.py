@@ -87,8 +87,8 @@ class Solver:
         return True
 
     def arc_constincancy(self, variable: Variable):
-        neighbors_conttraint = self.problem.get_neighbor_constraints(variable)
-        return any([x.is_satisfied() for x in neighbors_conttraint])
+        constraints = self.problem.constraints
+        return any([x.is_satisfied() for x in constraints])
 
     def select_unassigned_variable(self) -> Optional[Variable]:
         if self.use_mrv:
@@ -103,7 +103,7 @@ class Solver:
 
     def mrv(self) -> Optional[Variable]:
         unassigned_variables = self.problem.get_unassigned_variables()
-        return min(unassigned_variables, key=len(attrgetter('len_domain')))
+        return min(unassigned_variables, key=attrgetter('len_domain'))
 
     def degree_heuristic(self):
         unassigned_variables = self.problem.get_unassigned_variables()

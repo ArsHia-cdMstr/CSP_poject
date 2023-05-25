@@ -68,13 +68,15 @@ class Solver:
         return False
 
     def forward_check(self, var: Variable):
-        self.problem.calculate_neighbors()
+
+        # ERROR: why do you calculate neighbors again ?
+        # self.problem.calculate_neighbors()
         variable_value = var.value
 
         # Note : I will take care of this
         # if you accept you delete your code
 
-        # NOTE: you are using this method to do 
+        # NOTE: you are using this method to do
         # 2 action ( forward checking / check that we are not at a deadend)
         # you don't need to do the 2nd one the backward method do it itself
 
@@ -107,7 +109,7 @@ class Solver:
 
         return is_not_deadend
 
-    def arc_constincancy(self, variable: Variable):
+    def arc_consistency(self, variable: Variable):
         constraints = self.problem.constraints
         return any([x.is_satisfied() for x in constraints])
 
@@ -136,4 +138,3 @@ class Solver:
 
     def lcv(self, var: Variable):
         pass
-        # Write your code here

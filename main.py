@@ -4,10 +4,10 @@ from States.StatesProblem import StatesProblem
 from Sudoku.SudokuProblem import SudokuProblem
 
 
-states = StatesProblem()
-s = Solver(states, use_forward_check=True)
-s.solve()
-states.print_assignments()
+# states = StatesProblem()
+# s = Solver(states, use_forward_check=True)
+# s.solve()
+# states.print_assignments()
 
 
 # secret_santa = SecretSantaProblem(['arman', 'alice', 'nader', 'bob', 'sarah', 'iman'])

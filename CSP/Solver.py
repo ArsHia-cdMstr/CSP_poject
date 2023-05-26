@@ -39,7 +39,8 @@ class Solver:
         time_elapsed = (end - start) * 1000
         if result:
             print(f'Solved after {time_elapsed} ms')
-            [print(x) for x in result]
+            # Fixed: we didn't need print the variables in here
+            # [print(x) for x in result]
         else:
             print(f'Failed to solve after {time_elapsed} ms')
 
@@ -54,18 +55,18 @@ class Solver:
 
         unassigned_var: Variable or None = self.select_unassigned_variable(variables_domain)
         self.order_domain_values(unassigned_var, variables_domain)
-        for uval in unassigned_var.domain:
+        for uval in variables_domain[unassigned_var]:
             unassigned_var.value = uval  # added to assignment variables  
             print(f"unassigned var: {unassigned_var}")
             if self.is_consistent(unassigned_var):  # check if don't ignore neighbors constraints
                 # in here we shouldn't use forward check
                 # we have to run backtracking without forward checking
                 if self.use_forward_check:
-                    variables = self.forward_check(unassigned_var)
-                    if not variables:
+                    new_variables_domains = self.forward_check(variables_domain, unassigned_var)
+                    if not new_variables_domains:
                         break
 
-                result = self.backtracking()
+                result = self.backtracking(new_variables_domains)
                 if result:
                     return result
                 else:
@@ -86,7 +87,7 @@ class Solver:
         # variable : Variable = var[0]
         # old_domain: list = var[1]
 
-        variables_new_domains = {variable: domain.copy() for variable, domain in variables_dom.item()}
+        variables_new_domains = {variable: domain.copy() for variable, domain in variables_dom.items()}
 
         variable_value = var.value
 

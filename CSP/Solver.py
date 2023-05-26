@@ -62,9 +62,9 @@ class Solver:
                 # we have to run backtracking without forward checking
                 new_variables_domains = variables_domain
                 if self.use_forward_check:
-                    new_variables_domains = self.forward_check(variables_domain, unassigned_var)
-                    if not new_variables_domains:
-                        break
+                    if fc_res:=self.forward_check(variables_domain, unassigned_var):
+                        new_variables_domains = fc_res    
+
 
                 result = self.backtracking(new_variables_domains)
                 if result:

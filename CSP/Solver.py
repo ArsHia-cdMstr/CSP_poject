@@ -25,12 +25,16 @@ class Solver:
     def solve(self):
         self.problem.calculate_neighbors()
         start = time.time()
+
+        # Note: build the dictionary that has variable object and domain list in it
+        variables_domain = {var: var.domain for var in self.problem.variables}
+
         for var in self.problem.variables:
             print(f"var: {var}")
-            if not self.forward_check(var):
+            if not self.forward_check(variables_domain, var):
                 print("Problem Unsolvable")
                 return
-        result = self.backtracking()
+        result = self.backtracking(variables_domain)
         end = time.time()
         time_elapsed = (end - start) * 1000
         if result:
@@ -39,12 +43,16 @@ class Solver:
         else:
             print(f'Failed to solve after {time_elapsed} ms')
 
-    def backtracking(self):
+    def backtracking(self, variables_domain: dict[Variable, list]):
+
         if self.is_finished():
             print(f'Assignments: {self.problem.print_assignments()}')
-            return self.problem.variables  # todo: check
+            # Fixed : since we already have the value of variables
+            # we don't need to return anything but a True boolean
+            # return self.problem.variables  # todo: check
+            return True
 
-        unassigned_var: Variable or None = self.select_unassigned_variable()
+        unassigned_var: Variable or None = self.select_unassigned_variable(variables_domain)
         self.order_domain_values(unassigned_var)
         for uval in unassigned_var.domain:
             unassigned_var.value = uval  # added to assignment variables  
@@ -68,9 +76,9 @@ class Solver:
                 unassigned_var.value = None
         return False
 
-    def forward_check(self, variables_dom: dict[Variable, list], var):
+    def forward_check(self, variables_dom: dict[Variable, list], var: Variable):
 
-        # ERROR: why do you calculate neighbors again ?
+        # Fixed: why do you calculate neighbors again ?
         # self.problem.calculate_neighbors()
 
         # Code:
@@ -81,10 +89,10 @@ class Solver:
 
         variable_value = var.value
 
-        # Note : I will take care of this
+        # Fixed: I will take care of this
         # if you accept you delete your code
 
-        # NOTE: you are using this method to do
+        # Fixed: you are using this method to do
         # 2 action ( forward checking / check that we are not at a deadend)
         # you don't need to do the 2nd one the backward method do it itself
 
@@ -123,9 +131,9 @@ class Solver:
         constraints = self.problem.constraints
         return any([x.is_satisfied() for x in constraints])
 
-    def select_unassigned_variable(self) -> Optional[Variable]:
+    def select_unassigned_variable(self, variables_domain: dict[Variable, list]) -> Optional[Variable]:
         if self.use_mrv:
-            return self.mrv()
+            return self.mrv(variables_domain)
         unassigned_variables = self.problem.get_unassigned_variables()
         return unassigned_variables[0] if unassigned_variables else None
 
@@ -134,9 +142,19 @@ class Solver:
             return self.lcv(var)
         return var.domain
 
-    def mrv(self) -> Optional[Variable]:
-        unassigned_variables = self.problem.get_unassigned_variables()
-        return min(unassigned_variables, key=attrgetter('len_domain'))
+    def mrv(self, variables_domain: dict[Variable, list]) -> Optional[Variable]:
+        unassigned_variables: list[Variable] or None = self.problem.get_unassigned_variables()
+        # Fixed : we need to check the min of
+        # domain that we work with
+        # return min(unassigned_variables, key=attrgetter('len_domain'))
+        min1 = float('inf')
+        MRV_variable = None
+
+        for var in unassigned_variables:
+            if len(variables_domain[var]) < min1:
+                MRV_variable = var
+
+        return MRV_variable
 
     def degree_heuristic(self):
         unassigned_variables = self.problem.get_unassigned_variables()

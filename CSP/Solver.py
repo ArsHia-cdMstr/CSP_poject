@@ -53,7 +53,8 @@ class Solver:
                 # in here we shouldn't use forward check
                 # we have to run backtracking without forward checking
                 if self.use_forward_check:
-                    if not self.forward_check(unassigned_var):
+                    variables = self.forward_check(unassigned_var)
+                    if not variables:
                         break
 
                 result = self.backtracking()
@@ -67,10 +68,17 @@ class Solver:
                 unassigned_var.value = None
         return False
 
-    def forward_check(self, var: Variable):
+    def forward_check(self, variables_dom: dict[Variable, list], var):
 
         # ERROR: why do you calculate neighbors again ?
         # self.problem.calculate_neighbors()
+
+        # Code:
+        # variable : Variable = var[0]
+        # old_domain: list = var[1]
+
+        variables_new_domains = {variable: domain.copy() for variable, domain in variables_dom.item()}
+
         variable_value = var.value
 
         # Note : I will take care of this
@@ -96,20 +104,20 @@ class Solver:
         #         return False
         # return True
 
-        # todo: we have to copy domain and send it into lower layers
-
-        is_not_deadend: bool = True
-
         for neighbor in var.neighbors:
-            for nei_v in neighbor.domain:
+            new_neghbor_dom: list = variables_new_domains[neighbor]
+            for nei_v in new_neghbor_dom:
                 if nei_v == variable_value:
-                    neighbor.domain.remove(nei_v)
+                    new_neghbor_dom.remove(nei_v)
                     # NOTE: if there is no domain for a neighbor
                     # it means there is no solution for it and we need to backward
-                    if len(neighbor.domain) == 0:
+                    if len(new_neghbor_dom) == 0:
+                        # Note: if we face to deadend we will return false,
+                        # so that we won't continue calculating the deadend subtree
                         is_not_deadend = False
+                        return is_not_deadend
 
-        return is_not_deadend
+        return variables_new_domains
 
     def arc_consistency(self, variable: Variable):
         constraints = self.problem.constraints

@@ -54,4 +54,4 @@ class Variable(Generic[T]):
         return len(self.domain)
 
     def __str__(self) -> str:
-        return 'Varialble Name: {}, Value: {}'.format(self.name, self.value)
+        return 'Varialble Name: {}, Value: {}, Domain: {}'.format(self.name, self.value, self.domain)

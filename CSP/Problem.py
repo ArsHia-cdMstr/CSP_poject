@@ -36,5 +36,5 @@ class Problem(ABC):
     def get_neighbor_constraints(self, variable: Variable) -> List[Constraint]:
         return [constraint for constraint in self.constraints if variable in constraint.variables]
 
-    def len_neighbors_constraint(self, variable: Variable):
+    def len_neighbors_constraint(self, variable: Variable) -> int:
         return len(self.get_neighbor_constraints(variable))

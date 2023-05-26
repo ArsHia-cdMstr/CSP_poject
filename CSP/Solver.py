@@ -30,7 +30,6 @@ class Solver:
         variables_domain = {var: var.domain for var in self.problem.variables}
 
         for var in self.problem.variables:
-            print(f"var: {var}")
             if not self.forward_check(variables_domain, var):
                 print("Problem Unsolvable")
                 return
@@ -47,7 +46,7 @@ class Solver:
     def backtracking(self, variables_domain: dict[Variable, list]):
 
         if self.is_finished():
-            print(f'Assignments: {self.problem.print_assignments()}')
+            self.problem.print_assignments()
             # Fixed : since we already have the value of variables
             # we don't need to return anything but a True boolean
             # return self.problem.variables  # todo: check
@@ -56,11 +55,12 @@ class Solver:
         unassigned_var: Variable or None = self.select_unassigned_variable(variables_domain)
         self.order_domain_values(unassigned_var, variables_domain)
         for uval in variables_domain[unassigned_var]:
-            unassigned_var.value = uval  # added to assignment variables  
+            unassigned_var.value = uval  # assign a value variables  
             print(f"unassigned var: {unassigned_var}")
             if self.is_consistent(unassigned_var):  # check if don't ignore neighbors constraints
                 # in here we shouldn't use forward check
                 # we have to run backtracking without forward checking
+                new_variables_domains = variables_domain
                 if self.use_forward_check:
                     new_variables_domains = self.forward_check(variables_domain, unassigned_var)
                     if not new_variables_domains:
@@ -79,55 +79,22 @@ class Solver:
 
     @staticmethod
     def forward_check(variables_dom: dict[Variable, list], var: Variable):
-
-        # Fixed: why do you calculate neighbors again ?
-        # self.problem.calculate_neighbors()
-
-        # Code:
-        # variable : Variable = var[0]
-        # old_domain: list = var[1]
-
-        variables_new_domains = {variable: domain.copy() for variable, domain in variables_dom.items()}
-
+        new_variables_dom = {variable: domain.copy() for variable, domain in variables_dom.items()}
         variable_value = var.value
 
-        # Fixed: I will take care of this
-        # if you accept you delete your code
-
-        # Fixed: you are using this method to do
-        # 2 action ( forward checking / check that we are not at a deadend)
-        # you don't need to do the 2nd one the backward method do it itself
-
-        # pre_neighbors = var.neighbors
-
-        # # set the value for variable, so other domains will be removed
-        # var.domain = [variable_value]
-        # # remove the value from all the neighbors, if it has more than one value, then remove the value
-        # for i, neighbor in enumerate(var.neighbors):
-        #     if len(neighbor.domain) > 1:
-        #         neighbor.domain.remove(variable_value)
-        #     else:
-        #         var.value = None
-        #         for x in range(i + 1):
-        #             var.neighbors[i].domain = pre_neighbors[i].domain
-        #         # todo: revert the changed values from neighbors
-        #         return False
-        # return True
-
         for neighbor in var.neighbors:
-            new_neghbor_dom: list = variables_new_domains[neighbor]
-            for nei_v in new_neghbor_dom:
+            neighbor_domains: list = new_variables_dom[neighbor]
+            for nei_v in neighbor_domains:
                 if nei_v == variable_value:
-                    new_neghbor_dom.remove(nei_v)
+                    neighbor_domains.remove(nei_v)
                     # NOTE: if there is no domain for a neighbor
                     # it means there is no solution for it and we need to backward
-                    if len(new_neghbor_dom) == 0:
+                    if len(neighbor_domains) == 0: # no solution
                         # Note: if we face to deadend we will return false,
                         # so that we won't continue calculating the deadend subtree
-                        is_not_deadend = False
-                        return is_not_deadend
+                        return False
 
-        return variables_new_domains
+        return new_variables_dom
 
     def arc_consistency(self, variable: Variable):
         constraints = self.problem.constraints
@@ -145,15 +112,14 @@ class Solver:
         return variable_domain[var]
 
     def mrv(self, variables_domain: dict[Variable, list]) -> Optional[Variable]:
+        """Returns a variable with minimum remain values"""
         unassigned_variables: list[Variable] or None = self.problem.get_unassigned_variables()
-        # Fixed : we need to check the min of
-        # domain that we work with
-        # return min(unassigned_variables, key=attrgetter('len_domain'))
         min1 = float('inf')
         MRV_variable = None
 
         for var in unassigned_variables:
-            if len(variables_domain[var]) < min1:
+            if a:=len(variables_domain[var]) < min1:
+                min1 = a
                 MRV_variable = var
 
         return MRV_variable
@@ -163,7 +129,7 @@ class Solver:
         return max(unassigned_variables, key=attrgetter('len_neighbors_constraint'))
 
     def is_consistent(self, var: Variable):
-        print("is consistant: ".format([x.is_satisfied() for x in self.problem.get_neighbor_constraints(var)]))
+        print("is consistant: {}".format([x.is_satisfied() for x in self.problem.get_neighbor_constraints(var)]))
         return all([x.is_satisfied() for x in self.problem.get_neighbor_constraints(var)])
 
     def lcv(self, var: Variable, variables_domain: dict[Variable, list]):

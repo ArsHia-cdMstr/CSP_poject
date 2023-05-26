@@ -53,7 +53,7 @@ class Solver:
             return True
 
         unassigned_var: Variable or None = self.select_unassigned_variable(variables_domain)
-        self.order_domain_values(unassigned_var)
+        self.order_domain_values(unassigned_var, variables_domain)
         for uval in unassigned_var.domain:
             unassigned_var.value = uval  # added to assignment variables  
             print(f"unassigned var: {unassigned_var}")
@@ -76,7 +76,8 @@ class Solver:
                 unassigned_var.value = None
         return False
 
-    def forward_check(self, variables_dom: dict[Variable, list], var: Variable):
+    @staticmethod
+    def forward_check(variables_dom: dict[Variable, list], var: Variable):
 
         # Fixed: why do you calculate neighbors again ?
         # self.problem.calculate_neighbors()
@@ -137,10 +138,10 @@ class Solver:
         unassigned_variables = self.problem.get_unassigned_variables()
         return unassigned_variables[0] if unassigned_variables else None
 
-    def order_domain_values(self, var: Variable):
+    def order_domain_values(self, var: Variable, variable_domain: dict[Variable, list]):
         if self.use_lcv:
-            return self.lcv(var)
-        return var.domain
+            return self.lcv(var, variable_domain)
+        return variable_domain[var]
 
     def mrv(self, variables_domain: dict[Variable, list]) -> Optional[Variable]:
         unassigned_variables: list[Variable] or None = self.problem.get_unassigned_variables()
@@ -164,5 +165,17 @@ class Solver:
         print("is consistant: ".format([x.is_satisfied() for x in self.problem.get_neighbor_constraints(var)]))
         return all([x.is_satisfied() for x in self.problem.get_neighbor_constraints(var)])
 
-    def lcv(self, var: Variable):
-        pass
+    def lcv(self, var: Variable, variables_domain: dict[Variable, list]):
+        domain: list = variables_domain[var]
+        # return the value that has the least constrain value
+        return min(domain, key=lambda value: self.count_constraint(value, var, variables_domain))
+
+    @staticmethod
+    def count_constraint(value, var: Variable, variable_domain: dict[Variable, list]):
+        constraint_count = 0
+        for neighbor in var.neighbors:
+            for neighbor_value in variable_domain[neighbor]:
+                if neighbor_value == value:
+                    constraint_count += 1
+
+        return constraint_count

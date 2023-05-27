@@ -38,8 +38,6 @@ class Solver:
         time_elapsed = (end - start) * 1000
         if result:
             print(f'Solved after {time_elapsed} ms')
-            # Fixed: we didn't need print the variables in here
-            # [print(x) for x in result]
         else:
             print(f'Failed to solve after {time_elapsed} ms')
 
@@ -47,9 +45,6 @@ class Solver:
 
         if self.is_finished():
             self.problem.print_assignments()
-            # Fixed : since we already have the value of variables
-            # we don't need to return anything but a True boolean
-            # return self.problem.variables  # todo: check
             return True
 
         unassigned_var: Variable or None = self.select_unassigned_variable(variables_domain)
@@ -64,7 +59,6 @@ class Solver:
                 if self.use_forward_check:
                     if fc_res:=self.forward_check(variables_domain, unassigned_var):
                         new_variables_domains = fc_res    
-
 
                 result = self.backtracking(new_variables_domains)
                 if result:
@@ -83,14 +77,14 @@ class Solver:
         variable_value = var.value
 
         for neighbor in var.neighbors:
-            neighbor_domains: list = new_variables_dom[neighbor]
-            for nei_v in neighbor_domains:
-                if nei_v == variable_value:
-                    neighbor_domains.remove(nei_v)
+            neighbor_domain: list = new_variables_dom[neighbor]
+            for neighbor_value in neighbor_domain:
+                if neighbor_value == variable_value:
+                    neighbor_domain.remove(neighbor_value)
                     # NOTE: if there is no domain for a neighbor
                     # it means there is no solution for it and we need to backward
-                    if len(neighbor_domains) == 0: # no solution
-                        # Note: if we face to deadend we will return false,
+                    if len(neighbor_domain) == 0: # no solution
+                        # NOTE: if we face to deadend we will return false,
                         # so that we won't continue calculating the deadend subtree
                         return False
 
